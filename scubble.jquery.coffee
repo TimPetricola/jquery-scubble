@@ -99,20 +99,22 @@ http://opensource.org/licenses/MIT
       delete rawBreakpoints['more']
 
       for breakpoint, value of rawBreakpoints
-        parts = breakpoint.split(':')
-
-        if parts.length == 2
-          min = parts[0]
-          sec = parts[1]
-        else
-          min = 0
-          sec = parts[0]
-
-        total = (parseInt(min, 10) || 0)*60 + (parseInt(sec, 10) || 0)
-
-        @breakpoints[total] = value
-
+        @breakpoints[@parseBreakpoint(breakpoint)] = value
+        
       @breakpoints
+
+    parseBreakpoint: (breakpoint) ->
+      parts = breakpoint.split(':')
+
+      if parts.length == 2
+        min = parts[0]
+        sec = parts[1]
+      else
+        min = 0
+        sec = parts[0]
+
+      (parseInt(min, 10) || 0)*60 + (parseInt(sec, 10) || 0)
+
 
 
   class Time

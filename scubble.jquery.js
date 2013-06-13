@@ -105,25 +105,29 @@ http://opensource.org/licenses/MIT
       };
 
       Scubble.prototype.setBreakpoints = function() {
-        var breakpoint, min, parts, rawBreakpoints, sec, total, value;
+        var breakpoint, rawBreakpoints, value;
         rawBreakpoints = $.extend({}, this.options.breakpoints);
         this.breakpoints = {};
         this.breakpoints[Infinity] = rawBreakpoints['more'] || _defaults.breakpoints['more'];
         delete rawBreakpoints['more'];
         for (breakpoint in rawBreakpoints) {
           value = rawBreakpoints[breakpoint];
-          parts = breakpoint.split(':');
-          if (parts.length === 2) {
-            min = parts[0];
-            sec = parts[1];
-          } else {
-            min = 0;
-            sec = parts[0];
-          }
-          total = (parseInt(min, 10) || 0) * 60 + (parseInt(sec, 10) || 0);
-          this.breakpoints[total] = value;
+          this.breakpoints[this.parseBreakpoint(breakpoint)] = value;
         }
         return this.breakpoints;
+      };
+
+      Scubble.prototype.parseBreakpoint = function(breakpoint) {
+        var min, parts, sec;
+        parts = breakpoint.split(':');
+        if (parts.length === 2) {
+          min = parts[0];
+          sec = parts[1];
+        } else {
+          min = 0;
+          sec = parts[0];
+        }
+        return (parseInt(min, 10) || 0) * 60 + (parseInt(sec, 10) || 0);
       };
 
       return Scubble;
