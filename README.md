@@ -35,12 +35,12 @@ $('.scubble').scubble();
 ```javascript
 {
   content: 'body', // Element containing the text
-  speed: 200, // Reading speed (in words/minute)
-  strings: { // You can use {min} and {sec} placeholders to show time left
-    main: '{min} minutes left',
-    lastMinute: '1 minute left',
-    lastSeconds: 'Less than 1 minute left',
-    end: 'Thank you'
+  speed: 200,      // Reading speed (in words/minute)
+  breakpoints: {   // You can use {min} and {sec} placeholders to show time left
+    'more': '{min} minutes left',
+    '1:59': '1 minute left',
+    '0:59': 'Less than 1 minute left',
+    '0':    'Thank you'
   }
 }
 ```

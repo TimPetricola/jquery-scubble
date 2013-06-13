@@ -11,22 +11,21 @@ http://opensource.org/licenses/MIT
   _defaults = 
     content: 'body'
     speed: 200
-    strings:
-      main: '{min} minutes left'
-      lastMinute: '1 minute left'
-      lastSeconds: 'Less than 1 minute left'
-      end: 'Thank you'
+    breakpoints:
+      'more': '{min} minutes left'
+      '1:59': '1 minute left'
+      '59': 'Less than 1 minute left'
+      '0': 'Thank you'
  
   class Scubble
     constructor: (el, options) ->
-      @options  = $.extend(true, {}, _defaults, options)
-
-      @$bubble   = $(el)
+      @options  = $.extend({}, _defaults, options)
+      
+      @$bubble   = $(el).hide()
       @$content  = $(@options.content)
       
       Time.prototype.strings = @options.strings
-      
-      @$bubble.hide()
+      Time.prototype.breakpoints = @setBreakpoints()
       
       $(window).on 'scroll', => @scroll()
 
@@ -92,25 +91,52 @@ http://opensource.org/licenses/MIT
 
       offsets
 
+    setBreakpoints: ->
+      rawBreakpoints = $.extend({}, @options.breakpoints)
+      @breakpoints = {}
+
+      @breakpoints[Infinity] = rawBreakpoints['more'] || _defaults.breakpoints['more']
+      delete rawBreakpoints['more']
+
+      for breakpoint, value of rawBreakpoints
+        parts = breakpoint.split(':')
+
+        if parts.length == 2
+          min = parts[0]
+          sec = parts[1]
+        else
+          min = 0
+          sec = parts[0]
+
+        total = (parseInt(min, 10) || 0)*60 + (parseInt(sec, 10) || 0)
+
+        @breakpoints[total] = value
+
+      @breakpoints
+
+
   class Time
     constructor: (seconds) ->
-      @m = Math.floor(seconds/60)
-      @s = seconds % 60
-  
+      @seconds = seconds
+
+    m: ->
+      Math.floor(@seconds / 60)
+
+    s: ->
+      @seconds % 60
+
     readingString: ->
-      if @m < 1 and @s < 20
-        @format @strings.end
-      else if @m < 1
-        @format @strings.lastSeconds
-      else if @m == 1
-        @format @strings.lastMinute
-      else
-        @format @strings.main
-    
+      keys = (k for k of @breakpoints)
+      keys = keys.sort (a, b) ->
+        a - b
+
+      for k in keys
+        return @format(@breakpoints[k]) if @seconds <= k
+      
     format: (string) ->
       string
-        .replace('{min}', @m)
-        .replace('{s}', @s)
+        .replace('{min}', @m())
+        .replace('{s}', @s())
   
   $.fn.scubble = (options) ->
     @each ->
