@@ -47,6 +47,7 @@ $('.scubble').scubble();
 
 ### Even more options
 * `parser`: a function parsing a breakpoint string and returning a number, in seconds. The default format is `min:sec` 
+
 ```javascript
 {
   parser: function(breakpoint) {
