@@ -23,16 +23,12 @@ http://opensource.org/licenses/MIT
         '0': 'Thank you'
       },
       parser: function(breakpoint) {
-        var min, parts, sec;
-        parts = breakpoint.split(':');
-        if (parts.length === 2) {
-          min = parts[0];
-          sec = parts[1];
-        } else {
-          min = 0;
-          sec = parts[0];
+        var match;
+        match = breakpoint.match(/^(?:(\d*):)?(\d*)$/);
+        if (!match) {
+          throw new SyntaxError("Invalid 'min:sec' format: '" + breakpoint + "'");
         }
-        return (parseInt(min, 10) || 0) * 60 + (parseInt(sec, 10) || 0);
+        return (parseInt(match[1], 10) || 0) * 60 + parseInt(match[2], 10);
       }
     };
     Scubble = (function() {

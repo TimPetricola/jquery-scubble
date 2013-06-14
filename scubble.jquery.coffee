@@ -17,16 +17,9 @@ http://opensource.org/licenses/MIT
       '59': 'Less than 1 minute left'
       '0': 'Thank you'
     parser: (breakpoint) ->
-      parts = breakpoint.split(':')
-
-      if parts.length == 2
-        min = parts[0]
-        sec = parts[1]
-      else
-        min = 0
-        sec = parts[0]
-
-      (parseInt(min, 10) || 0)*60 + (parseInt(sec, 10) || 0)
+      match = breakpoint.match /^(?:(\d*):)?(\d*)$/
+      throw new SyntaxError("Invalid 'min:sec' format: '#{breakpoint}'") unless match
+      (parseInt(match[1],10) || 0)*60 + parseInt(match[2], 10)
 
   class Scubble
     constructor: (el, options) ->
@@ -37,7 +30,7 @@ http://opensource.org/licenses/MIT
       
       Time.prototype.strings = @options.strings
       Time.prototype.breakpoints = @setBreakpoints()
-      
+
       $(window).on 'scroll', => @scroll()
 
     scroll: ->
@@ -108,7 +101,6 @@ http://opensource.org/licenses/MIT
 
       @breakpoints[Infinity] = rawBreakpoints['more'] || _defaults.breakpoints['more']
       delete rawBreakpoints['more']
-
       for breakpoint, value of rawBreakpoints
         seconds = @options.parser(breakpoint)
         @breakpoints[seconds] = value
