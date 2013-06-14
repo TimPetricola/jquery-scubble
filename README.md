@@ -31,7 +31,7 @@ $('.scubble').scubble();
 }
 ```
 
-### Options
+### Basic options
 ```javascript
 {
   content: 'body', // Element containing the text
@@ -41,6 +41,25 @@ $('.scubble').scubble();
     '1:59': '1 minute left',
     '0:59': 'Less than 1 minute left',
     '0':    'Thank you'
+  }
+}
+```
+
+### Even more options
+* `parser`: a function parsing a breakpoint string and returning a number, in seconds. The default format is `min:sec` 
+```javascript
+{
+  parser: function(breakpoint) {
+    var min, parts, sec;
+    parts = breakpoint.split(':');
+    if (parts.length === 2) {
+      min = parts[0];
+      sec = parts[1];
+    } else {
+      min = 0;
+      sec = parts[0];
+    }
+    return (parseInt(min, 10) || 0) * 60 + (parseInt(sec, 10) || 0);
   }
 }
 ```

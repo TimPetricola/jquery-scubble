@@ -21,6 +21,18 @@ http://opensource.org/licenses/MIT
         '1:59': '1 minute left',
         '59': 'Less than 1 minute left',
         '0': 'Thank you'
+      },
+      parser: function(breakpoint) {
+        var min, parts, sec;
+        parts = breakpoint.split(':');
+        if (parts.length === 2) {
+          min = parts[0];
+          sec = parts[1];
+        } else {
+          min = 0;
+          sec = parts[0];
+        }
+        return (parseInt(min, 10) || 0) * 60 + (parseInt(sec, 10) || 0);
       }
     };
     Scubble = (function() {
@@ -105,29 +117,17 @@ http://opensource.org/licenses/MIT
       };
 
       Scubble.prototype.setBreakpoints = function() {
-        var breakpoint, rawBreakpoints, value;
+        var breakpoint, rawBreakpoints, seconds, value;
         rawBreakpoints = $.extend({}, this.options.breakpoints);
         this.breakpoints = {};
         this.breakpoints[Infinity] = rawBreakpoints['more'] || _defaults.breakpoints['more'];
         delete rawBreakpoints['more'];
         for (breakpoint in rawBreakpoints) {
           value = rawBreakpoints[breakpoint];
-          this.breakpoints[this.parseBreakpoint(breakpoint)] = value;
+          seconds = this.options.parser(breakpoint);
+          this.breakpoints[seconds] = value;
         }
         return this.breakpoints;
-      };
-
-      Scubble.prototype.parseBreakpoint = function(breakpoint) {
-        var min, parts, sec;
-        parts = breakpoint.split(':');
-        if (parts.length === 2) {
-          min = parts[0];
-          sec = parts[1];
-        } else {
-          min = 0;
-          sec = parts[0];
-        }
-        return (parseInt(min, 10) || 0) * 60 + (parseInt(sec, 10) || 0);
       };
 
       return Scubble;

@@ -16,7 +16,18 @@ http://opensource.org/licenses/MIT
       '1:59': '1 minute left'
       '59': 'Less than 1 minute left'
       '0': 'Thank you'
- 
+    parser: (breakpoint) ->
+      parts = breakpoint.split(':')
+
+      if parts.length == 2
+        min = parts[0]
+        sec = parts[1]
+      else
+        min = 0
+        sec = parts[0]
+
+      (parseInt(min, 10) || 0)*60 + (parseInt(sec, 10) || 0)
+
   class Scubble
     constructor: (el, options) ->
       @options  = $.extend({}, _defaults, options)
@@ -99,22 +110,10 @@ http://opensource.org/licenses/MIT
       delete rawBreakpoints['more']
 
       for breakpoint, value of rawBreakpoints
-        @breakpoints[@parseBreakpoint(breakpoint)] = value
+        seconds = @options.parser(breakpoint)
+        @breakpoints[seconds] = value
         
       @breakpoints
-
-    parseBreakpoint: (breakpoint) ->
-      parts = breakpoint.split(':')
-
-      if parts.length == 2
-        min = parts[0]
-        sec = parts[1]
-      else
-        min = 0
-        sec = parts[0]
-
-      (parseInt(min, 10) || 0)*60 + (parseInt(sec, 10) || 0)
-
 
 
   class Time
